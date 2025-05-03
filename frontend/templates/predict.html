@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(to right, #f0f4f8, #d9e4f5);
+        padding: 40px 20px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .card {
+        background: #ffffff;
+        padding: 35px;
+        border-radius: 20px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+        margin-bottom: 40px;
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: scale(1.01);
+    }
+
+    h1 {
+        color: #1a237e;
+        font-size: 32px;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+    h2 {
+        color: #0d1b2a;
+        margin-bottom: 20px;
+        font-size: 24px;
+    }
+
+    form label {
+        font-weight: 600;
+        color: #37474f;
+        display: block;
+        margin-top: 10px;
+        margin-bottom: 5px;
+    }
+
+    input[type="file"] {
+        padding: 10px;
+        background: #f1f3f4;
+        border: 2px solid #cfd8dc;
+        border-radius: 10px;
+        width: 100%;
+        font-size: 15px;
+    }
+
+    input[type="submit"] {
+        background: #1976d2;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 16px;
+        padding: 14px 28px;
+        border: none;
+        border-radius: 10px;
+        margin-top: 20px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+        background: #0d47a1;
+    }
+
+    video, img {
+        max-width: 100%;
+        border-radius: 14px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease;
+    }
+
+    video:hover, img:hover {
+        transform: scale(1.02);
+    }
+
+    p {
+        background: #e3f2fd;
+        padding: 14px 22px;
+        border-radius: 10px;
+        color: #0d47a1;
+        font-weight: 600;
+        font-size: 18px;
+    }
+
+    /* Loader Styling */
+    .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.85);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        display: none;
+        flex-direction: column;
+    }
+
+    .car-loader {
+        font-size: 48px;
+        animation: drive 2s linear infinite;
+    }
+
+    @keyframes drive {
+        0%   { transform: translateX(-100px); }
+        50%  { transform: translateX(100px); }
+        100% { transform: translateX(-100px); }
+    }
+
+    .loading-text {
+        font-size: 20px;
+        color: #0d47a1;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    @media screen and (max-width: 600px) {
+        h1 {
+            font-size: 26px;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+
+        .card {
+            padding: 25px;
+        }
+    }
+</style>
+
+<!-- Loader -->
+<div class="loader-overlay" id="loader">
+    <div class="car-loader">🚗</div>
+    <div class="loading-text">Detecting number plate...</div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h1>🚗 Smart Number Plate Recognition</h1>
+        <form action="/predict" method="post" enctype="multipart/form-data" onsubmit="showLoader()">
+            <label>Upload Image:</label>
+            <input type="file" name="image">
+            
+            <label>Upload Video:</label>
+            <input type="file" name="video">
+            
+            <input type="submit" value="🔍 Run Detection">
+        </form>
+    </div>
+
+    {% if uploaded_path %}
+        <div class="card">
+            <h2>📤 Uploaded {{ file_type.title() }}</h2>
+            {% if file_type == 'image' %}
+                <img src="{{ uploaded_path }}" alt="Uploaded Image">
+            {% else %}
+                <video controls>
+                    <source src="{{ uploaded_path }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if processed_path %}
+        <div class="card">
+            <h2>Processed {{ file_type.title() }}</h2>
+            {% if file_type == 'image' %}
+                <img src="{{ processed_path }}" alt="Processed Image">
+            {% else %}
+                <video controls>
+                    <source src="{{ processed_path }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if number %}
+        <div class="card">
+            <h2>🔢 Recognized Number Plate(s)</h2>
+            <p>{{ number }}</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    function showLoader() {
+        document.getElementById('loader').style.display = 'flex';
+    }
+</script>
+
+{% endblock %}

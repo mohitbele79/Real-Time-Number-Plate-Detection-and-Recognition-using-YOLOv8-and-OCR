@@ -1,0 +1,6 @@
+path: C:/Users/mohit/Desktop\Naresh_IT/Full_Stack_Data_Science/INTERNSHIP/newplate/dataset
+train: images/train
+val: images/val
+
+nc: 1  # Number of classes (only "number plate")
+names: ["number plate"]

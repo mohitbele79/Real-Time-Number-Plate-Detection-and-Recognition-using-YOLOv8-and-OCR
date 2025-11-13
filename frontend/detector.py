@@ -8,7 +8,6 @@ from datetime import datetime
 def detect_number_plate(file_path):
     ext = os.path.splitext(file_path)[1].lower()
     is_video = ext in ['.mp4', '.avi', '.mov']
-   
 
     pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
@@ -97,11 +96,11 @@ def detect_number_plate(file_path):
                             cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
             cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 2)
 
-        #Save image using the original name
+        # Save image using the original name
         output_path = os.path.join(output_dir, f"{file_stem}_processed{file_ext}")
         cv2.imwrite(output_path, img)
 
-    #Save CSV with timestamp (unchanged)
+    # Save CSV with timestamp (unchanged)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     csv_path = os.path.join(output_dir, f"recognized_plates_{timestamp}.csv")
     with open(csv_path, 'w', newline='') as f:
@@ -110,4 +109,7 @@ def detect_number_plate(file_path):
         for plate in recognized_numbers:
             writer.writerow([plate])
 
-    return output_path.replace("static", "/static"), ", ".join(recognized_numbers) if recognized_numbers else "Not Detected"
+    # ✅ FIXED RETURN PATH
+    return f"/static/processed/{os.path.basename(output_path)}", \
+           ", ".join(recognized_numbers) if recognized_numbers else "Not Detected"
+

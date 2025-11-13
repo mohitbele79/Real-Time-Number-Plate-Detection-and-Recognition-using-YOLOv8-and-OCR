@@ -2,9 +2,6 @@ from flask import Flask, render_template, request
 import os
 from werkzeug.utils import secure_filename
 from detector import detect_number_plate
-from flask import url_for
-
-
 
 
 app = Flask(__name__)
@@ -20,6 +17,7 @@ os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 @app.route('/')
 def home():
     return render_template('home.html')
+
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
     if request.method == 'POST':
@@ -31,26 +29,26 @@ def predict():
         file_type = None
         number = None
 
-        if image:
+        if image and image.filename != '':
             filename = secure_filename(image.filename)
             uploaded_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             image.save(uploaded_path)
 
             processed_full_path, number = detect_number_plate(uploaded_path)
-            processed_path = '/' + processed_full_path.replace("\\", "/")
+            processed_path = processed_full_path.replace("\\", "/")
             file_type = 'image'
 
-        elif video:
+        elif video and video.filename != '':
             filename = secure_filename(video.filename)
             uploaded_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             video.save(uploaded_path)
 
             processed_full_path, number = detect_number_plate(uploaded_path)
-            processed_path = '/' + processed_full_path.replace("\\", "/")
+            processed_path = processed_full_path.replace("\\", "/")
             file_type = 'video'
 
         return render_template('predict.html',
-                               uploaded_path='/' + uploaded_path.replace("\\", "/"),
+                               uploaded_path=f"/static/uploads/{filename}",
                                processed_path=processed_path,
                                file_type=file_type,
                                number=number)
